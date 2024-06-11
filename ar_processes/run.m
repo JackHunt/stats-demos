@@ -1,5 +1,5 @@
 %% Clear environment.
-clear all;
+clear variables;
 close all;
 clc;
 
@@ -31,8 +31,16 @@ time = datestr(datenum(yr(:),mo(:),1));
 ts = timeseries(y(:),time,'name','AirlinePassengers');
 ts.TimeInfo.Format = 'dd-mmm-yyyy';
 
-%% Run some autoregressive processes.
-sys = cell(4);
+%% Fit some autoregressive processes.
+sys = cell(5, 1);
+ts_data = iddata(ts(1).Data, 'TimeUnit', 'months');
 for n=1:size(sys, 1)
-    sys{n} = ar(ts, n);
+    order = n * 5;
+    sys{n} = ar(ts_data, order);
+    sys{n}.Name = sprintf("Order = %d", order);
+    sys{n}.TimeUnit = "months";
 end
+
+%% Plot
+figure;
+compare(ts_data, sys{:});
