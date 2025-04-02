@@ -31,16 +31,26 @@ Y_cal = Y_rem(training(cv2));
 %% Train SVM
 svm = fitcecoc(X_train, Y_train);
 
+Y_pred = predict(svm, X_train);
+
+figure;
+confusionchart(confusionmat(Y_train, Y_pred), categories(Y_train));
+title('Post Train Confusion Matrix');
+
 %% Calibrate for Conformal Prediction
-[~, scores_cal] = predict(svm, X_cal);
+[labels_cal, scores_cal] = predict(svm, X_cal);
 nonconformity_cal = 1 - softmax(scores_cal);
 
 n_cal = size(nonconformity_cal, 1);
 q = ceil((1 - alpha) * (n_cal + 1)) / (n_cal + 1);
 q_hat = quantile(nonconformity_cal, q);
 
+figure;
+confusionchart(confusionmat(Y_cal, labels_cal), categories(Y_cal));
+title('Calibration Confusion Matrix');
+
 %% Do Conformal Prediction
-[~, scores_test] = predict(svm, X_test);
+[labels_test, scores_test] = predict(svm, X_test);
 nonconformity_test = 1 - softmax(scores_test);
 
 C = nonconformity_test <= q_hat;
@@ -50,3 +60,7 @@ for n = 1 : size(X_test, 1)
     C_str = sprintf('{%s}', strjoin(cellstr(C_n), ', '));
     fprintf('Y = %s, C = %s\n', Y_test(n), C_str);
 end
+
+figure;
+confusionchart(confusionmat(Y_test, labels_test), categories(Y_test));
+title('Test Confusion Matrix');
