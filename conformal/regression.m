@@ -70,7 +70,6 @@ errorbar(D_test.X, pred_test(:, 2), pred_test_upper - pred_test_lower, ...
 
 legend("Location", "NorthWest");
 
-axis tight
 title("Random Forest Quantile Regression")
 hold off
 
