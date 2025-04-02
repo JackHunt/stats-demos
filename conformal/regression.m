@@ -46,10 +46,12 @@ q_hat = quantile(nonconformity_cal, q);
 %% Predict.
 pred_test = quantilePredict(forest, D_test.X, "Quantile", tau);
 
-lower_bound = pred_test(:, 1) - q_hat;
-upper_bound = pred_test(:, 3) + q_hat;
+pred_test_lower = pred_test(:, 1) - q_hat;
+pred_test_upper = pred_test(:, 3) + q_hat;
 
-coverage = mean((D_test.Y >= lower_bound) & (D_test.Y <= upper_bound));
+coverage = mean( ...
+    (D_test.Y >= pred_test_lower) & (D_test.Y <= pred_test_upper));
+
 fprintf("Empirical coverage: %.2f\n", coverage);
 
 %% Plot
@@ -63,7 +65,7 @@ hold on
 plot(D_cal.X, D_cal.Y, "*", "DisplayName", "Cal Data");
 
 hold on
-errorbar(D_test.X, pred_test(:, 2), upper_bound - lower_bound, ...
+errorbar(D_test.X, pred_test(:, 2), pred_test_upper - pred_test_lower, ...
     "vertical", "*", "DisplayName", "Predictions")
 
 legend("Location", "NorthWest");
@@ -74,6 +76,7 @@ hold off
 
 %% Print predictions.
 for n = 1 : size(D_test.X, 1)
-    fprintf("Y = %d, Y_pred = %d, lower=%d, upper=%d\n", ...
-        D_test.Y(n), pred_test(n, 2), pred_test(n, 1), pred_test(n, 3));
+    fprintf("Y = %.3f, Y_pred = %.3f, lower=%.3f, upper=%.3f\n", ...
+        D_test.Y(n), ...
+        pred_test(n, 2), pred_test_lower(n, 1), pred_test_upper(n, 1));
 end
