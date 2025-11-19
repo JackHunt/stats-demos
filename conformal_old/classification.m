@@ -42,7 +42,7 @@ title("Post Train Confusion Matrix");
 nonconformity_cal = 1 - softmax(scores_cal);
 
 n_cal = size(nonconformity_cal, 1);
-q = ceil((1 - alpha) * (n_cal + 1)) / (n_cal + 1);
+q = ceil((1 - alpha) * (n_cal + 1)) / (n_cal);
 q_hat = quantile(nonconformity_cal, q);
 
 figure;
