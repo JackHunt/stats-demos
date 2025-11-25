@@ -12,7 +12,7 @@ function data = n_class_synthetic(N, N_feat, N_class, perc_train)
     D = [];
     for k = 1 : N_class
         M = rand(1, N_feat) * 2 * k - rand(1, N_feat) * 10;
-        S = eye(N_feat) * rand(1,1);%onionMethodCorr(N_feat);
+        S = eye(N_feat) * rand(1, 1) * 2;%onionMethodCorr(N_feat);
 
         feat = mvnrnd(M, S, N_per_class);
         label = repmat(k, N_per_class, 1);
